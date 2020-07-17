@@ -68,73 +68,70 @@ if __name__=='__main__':
     file.close()
 
     label = [18, 1, 2, 3, 7, 8, 9, 12, 13, 14, 15, 16, 17, 20, 22, 26, 27]
-#   label = [2, 3, 7, 14, 18, 20, 22]
-#    label = [18]
     data_t = A[np.isin(A[:,0], label)]
-#    T = transform_matrix(0, 0, 0, 30, 0, 0)
-#    T = transform_matrix(0.17318, 0.199038, -1.465203, 33.3701, -1.87829, 1.80774)
 
-## Proposed
-    T = transform_matrix(0.17318, 0.199038, -0.24597, 33.3701, 0.775039, 0.103722)
+    original = cartesian_to_spherical(data_t)
+
 
 ## RCS
-# =============================================================================
-#     T = transform_matrix(0.17318, 0.199038, -0.256711, 33.3701, 0.644527, 3.04078)    
-# =============================================================================
+    T = transform_matrix(0.146602, 0.197916, -0.213417, 32.59, 1.9, -0.3)
+    transformed_data_t = transform_points(data_t, np.linalg.inv(T))
+    rcs = cartesian_to_spherical(transformed_data_t)
 
-# # cvgip
-# =============================================================================
-#     T = transform_matrix(0.17318, 0.199038, -0.185599, 33.3701, 0.714638, -0.161005)
-# =============================================================================
+## Select
+    T = transform_matrix(0.149781, 0.193565, -0.21, 32.5908, 1.17012, 0.17)
+    transformed_data_t = transform_points(data_t, np.linalg.inv(T))
+    select = cartesian_to_spherical(transformed_data_t)
 
     
     transformed_data_t = transform_points(data_t, np.linalg.inv(T))
     s = cartesian_to_spherical(transformed_data_t)
-    
-    i = 0
-    for name, hex in matplotlib.colors.cnames.items():
-        if i==0:
-            color_set = np.array(name)
-        elif i>0:
-            color_set = np.row_stack((color_set, name))
-        i=i+1
-    i = 0
 
-    for ss in s[:,0]:
-        if i==0:
-            cc = np.array(color_set[int(ss), 0])
-        elif i>0:
-            cc = np.row_stack((cc, color_set[int(ss), 0]))
-        i=i+1
-        
-#    plt.scatter(rcs[:,0], rcs[:,1], s = 3, color = 'green', label = 'Before Optimization')
-    plt.scatter(s[:,3], s[:,6], s = 3, c = s[:,0], cmap = 'rainbow')
 
-# rcs
-    # c0 = 5.64
-    # c2 = -0.3
-    # x = np.arange(-10, 10, 0.1)    
-    # sigma = c2*(x**2) + c0
-    # plt.plot(x, sigma, color = 'black')
+    plt.figure()
+    plt.scatter(rcs[:,3], rcs[:,6], s = 3, c = s[:,0], cmap = 'rainbow')
+    plt.savefig('ranbow.png', dpi = 1000)
+    plt.show()
 
-# cvgip
-    # line3_x = np.zeros((1,2))
-    # line4_x = np.zeros((1,2))
-    # line3_y = np.zeros((1,2))
-    # line4_y = np.zeros((1,2))
-    # line3_x[0,0] = -15
-    # line3_y[0,0] = 12
-    # line3_x[0,1] = 10
-    # line3_y[0,1] = 12
+    plt.figure()
+    plt.scatter(original[:,3], original[:,6], s = 3, color = 'green', label = 'Before Optimization')
+    plt.scatter(rcs[:,3], rcs[:,6], s = 3, color = 'red', label = 'After Optimization')
+    plt.legend(loc='upper right', fontsize = 8)
+    plt.savefig('comparison.png', dpi = 1000)
+    plt.show()
 
-    # line4_x[0,0] = -15
-    # line4_y[0,0] = -9.5
-    # line4_x[0,1] = 10
-    # line4_y[0,1] = -9.5
-    # plt.plot(line3_x[0,:], line3_y[0,:], color = 'red', linestyle="-")
-    # plt.plot(line4_x[0,:], line4_y[0,:], color = 'purple', linestyle="-")
-    # plt.axhspan(12, 22, facecolor='red', alpha=0.1)
-    # plt.axhspan(-11, -9.5, facecolor='purple', alpha=0.1)
+# RCS
+    plt.figure()
+    c0 = 5.64
+    c2 = -0.3
+    x = np.arange(-10, 10, 0.1)    
+    sigma = c2*(x**2) + c0
+    sigma[sigma[:] < -10] = -10
+    plt.plot(x, sigma, color = 'black')
+    plt.scatter(rcs[:,3], rcs[:,6], s = 3, color = 'red', label = 'After Optimization')
+    plt.savefig('curve.png', dpi = 1000)
+    plt.show()
+
+# Select
+    plt.figure()
+    plt.scatter(select[:,3], select[:,6], s = 3, color = 'blue', label = 'After Optimization')
+    line3_x = np.zeros((1,2))
+    line4_x = np.zeros((1,2))
+    line3_y = np.zeros((1,2))
+    line4_y = np.zeros((1,2))
+    line3_x[0,0] = -15
+    line3_y[0,0] = 12
+    line3_x[0,1] = 10
+    line3_y[0,1] = 12
+
+    line4_x[0,0] = -15
+    line4_y[0,0] = -9.5
+    line4_x[0,1] = 10
+    line4_y[0,1] = -9.5
+    plt.plot(line3_x[0,:], line3_y[0,:], color = 'red', linestyle="-")
+    plt.plot(line4_x[0,:], line4_y[0,:], color = 'purple', linestyle="-")
+    plt.axhspan(12, 22, facecolor='red', alpha=0.1)
+    plt.axhspan(-11, -9.5, facecolor='purple', alpha=0.1)
 
     line1_x = np.zeros((1,2))
     line1_y = np.zeros((1,2))
@@ -150,7 +147,7 @@ if __name__=='__main__':
     
     plt.xlabel('elevation angle ψ[deg]')
     plt.ylabel('RCS strength value δ')
-    plt.savefig('azimuth_scatter.png', dpi = 1000)
+    plt.savefig('span.png', dpi = 1000)
     plt.show()
 
     
