@@ -98,7 +98,7 @@ if __name__=='__main__':
     x_l = np.multiply(s[:,0], np.cos(s[:,1]*math.pi/180));
     y_l = np.multiply(s[:,0], np.sin(s[:,1]*math.pi/180));
     a_l = np.rad2deg(np.arctan2(y_l,x_l))
-    t_l = l_data_t[:,1] - l_data_t[0,1]
+    t_l = l_data_t[:,1] - r_data_t[0,1]
 
     # region_x = np.array([52, 52, 52.5, 52.5, 52])
     # region_y = np.array([0, 20, 20, 0, 0])
